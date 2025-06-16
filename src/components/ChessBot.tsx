@@ -1,10 +1,14 @@
 import { ChessBoard } from './ChessBoard';
 import { GameControls } from './GameControls';
+import { SettingsModal } from './SettingsModal';
+import { FenDisplay } from './FenDisplay';
+import { MoveNotation } from './MoveNotation';
 import { useChessBot } from '../hooks/useChessBot';
 import { useState, useEffect } from 'react';
 
 export function ChessBot() {
   const [isMobile, setIsMobile] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -56,7 +60,7 @@ export function ChessBot() {
       {/* Header */}
       <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border-b border-gray-700 shadow-lg">
         <div className="container mx-auto px-3 py-4 md:px-4 md:py-6">
-          <div className="flex items-center justify-center gap-2 md:gap-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 md:gap-3">
               <span className="text-2xl md:text-4xl">♔</span>
               <div className="text-center md:text-left">
@@ -65,6 +69,13 @@ export function ChessBot() {
               </div>
               <span className="text-2xl md:text-4xl">♚</span>
             </div>
+            <button
+              onClick={() => setShowSettings(true)}
+              className="chess-button secondary p-2 ml-4"
+              title="Settings"
+            >
+              ⚙️
+            </button>
           </div>
         </div>
       </header>
@@ -176,6 +187,19 @@ export function ChessBot() {
                 </div>
               )}
 
+              {/* Move Notation and FEN Display */}
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <MoveNotation 
+                  lastMove={moveHistory[moveHistory.length - 1] || null}
+                  moveNumber={chess.moveNumber()}
+                  currentTurn={chess.turn()}
+                />
+                <FenDisplay 
+                  fen={chess.fen()} 
+                  showLabel={!isMobile}
+                />
+              </div>
+
               {/* Analysis Display */}
               {(analysis || hintMove) && (
                 <div className="mt-4 p-3 md:p-4 bg-gray-800 rounded-lg border border-gray-600">
@@ -264,6 +288,14 @@ export function ChessBot() {
           </div>
         </div>
       </footer>
+
+      {/* Settings Modal */}
+      <SettingsModal
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
+        currentSettings={settings}
+        onSettingsChange={handleSettingsChange}
+      />
     </div>
   );
 } 

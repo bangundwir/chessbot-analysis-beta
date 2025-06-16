@@ -37,23 +37,34 @@ export function ChessBoard({
     setIsTouchDevice(checkTouchDevice());
   }, []);
 
-  // Calculate responsive board size
+  // Calculate responsive board size with improved mobile handling
   useEffect(() => {
     const calculateBoardSize = () => {
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight;
+      const isLandscape = screenWidth > screenHeight;
       
       // Mobile portrait (very small)
       if (screenWidth < 480) {
-        return Math.min(screenWidth * 0.95, 340);
+        if (isLandscape) {
+          // Mobile landscape - use more of the height
+          return Math.min(screenHeight * 0.85, screenWidth * 0.45, 380);
+        } else {
+          // Mobile portrait - use most of the width
+          return Math.min(screenWidth * 0.92, 360);
+        }
       }
       // Mobile landscape or small tablet
       else if (screenWidth < 768) {
-        return Math.min(screenWidth * 0.6, screenHeight * 0.7, 420);
+        if (isLandscape) {
+          return Math.min(screenHeight * 0.8, screenWidth * 0.5, 450);
+        } else {
+          return Math.min(screenWidth * 0.85, 420);
+        }
       }
       // Tablet
       else if (screenWidth < 1024) {
-        return Math.min(screenWidth * 0.5, 520);
+        return Math.min(screenWidth * 0.5, screenHeight * 0.65, 520);
       }
       // Desktop
       else {
@@ -107,30 +118,47 @@ export function ChessBoard({
     }
   });
 
-  // Enhanced square click handler for mobile
+  // Enhanced square click handler for mobile with improved feedback
   const handleSquareClick = useCallback((square: Square) => {
     if (isTouchDevice) {
       const now = Date.now();
       // Prevent double-tap issues on mobile
-      if (now - lastTouchTime < 100) {
+      if (now - lastTouchTime < 150) {
         return;
       }
       setLastTouchTime(now);
+      
+      // Add haptic feedback for mobile
+      if (navigator.vibrate) {
+        navigator.vibrate(10); // Light tap feedback
+      }
     }
     
     console.log('Square clicked:', square, 'Touch device:', isTouchDevice);
     onSquareClick(square);
   }, [onSquareClick, isTouchDevice, lastTouchTime]);
 
-  // Enhanced piece drop handler
+  // Enhanced piece drop handler with better mobile support
   const handlePieceDrop = useCallback((sourceSquare: string, targetSquare: string) => {
     console.log('Piece dropped from', sourceSquare, 'to', targetSquare, 'Touch device:', isTouchDevice);
     
     // Add small delay for mobile to ensure proper state updates
     if (isTouchDevice) {
+      // Add haptic feedback for mobile drop
+      if (navigator.vibrate) {
+        navigator.vibrate(15); // Medium tap feedback for drop
+      }
+      
       setTimeout(() => {
         const moveSuccessful = onPieceDrop(sourceSquare as Square, targetSquare as Square);
         console.log('Mobile drop result:', moveSuccessful);
+        
+        // Additional feedback for successful/failed moves
+        if (moveSuccessful && navigator.vibrate) {
+          navigator.vibrate([10, 50, 10]); // Success pattern
+        } else if (!moveSuccessful && navigator.vibrate) {
+          navigator.vibrate([100, 50, 100]); // Error pattern
+        }
       }, 50);
       return true; // Return true immediately for mobile to prevent snap-back
     }
@@ -174,21 +202,39 @@ export function ChessBoard({
   // Calculate notation font size based on board size
   const notationFontSize = boardSize < 340 ? '8px' : boardSize < 420 ? '10px' : '12px';
 
-  // Mobile-specific board styles
+  // Enhanced mobile-specific board styles
   const mobileBoardStyle: Record<string, string | number> = {
     borderRadius: boardSize < 400 ? '6px' : '8px',
     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
     border: '2px solid #8b7355',
-    ...(isTouchDevice && { touchAction: 'none' }) // Prevent scrolling while interacting with board
+    transition: 'all 0.3s ease',
+    ...(isTouchDevice && { 
+      touchAction: 'none', // Prevent scrolling while interacting with board
+      userSelect: 'none', // Prevent text selection on mobile
+      WebkitUserSelect: 'none',
+      WebkitTouchCallout: 'none', // Prevent iOS callout menu
+      WebkitTapHighlightColor: 'transparent' // Remove tap highlight
+    })
   };
 
   return (
     <div className="relative w-full flex flex-col items-center">
-      {/* Mobile Instructions */}
+      {/* Enhanced Mobile Instructions */}
       {isTouchDevice && (
         <div className="mb-2 text-center">
-          <div className="text-xs text-gray-400 bg-gray-800/50 rounded px-2 py-1">
-            📱 Tap piece → Tap destination or Drag & Drop
+          <div className="text-xs text-gray-400 bg-gray-800/50 rounded px-3 py-2 border border-gray-600">
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <span>📱</span>
+              <span className="font-medium text-gray-300">Mobile Controls</span>
+            </div>
+            <div className="text-gray-400">
+              Tap piece → Tap destination or Drag & Drop
+            </div>
+            {selectedSquare && (
+              <div className="text-yellow-400 mt-1 animate-pulse">
+                ✨ {selectedSquare} selected • Tap destination
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -210,9 +256,11 @@ export function ChessBoard({
           boardWidth={boardSize}
           animationDuration={isTouchDevice ? 150 : 200}
           arePiecesDraggable={arePiecesDraggable}
-          showBoardNotation={boardSize > 300}
-          snapToCursor={true}
+          showBoardNotation={boardSize > 320}
+          snapToCursor={isTouchDevice}
           customBoardStyle={mobileBoardStyle}
+          arePremovesAllowed={false}
+          showPromotionDialog={true}
           customDarkSquareStyle={{
             backgroundColor: '#b58863'
           }}
@@ -309,14 +357,7 @@ export function ChessBoard({
         )}
       </div>
 
-      {/* Selected piece indicator for mobile */}
-      {isTouchDevice && selectedSquare && (
-        <div className="mt-2 text-center">
-          <div className="text-xs text-yellow-400 bg-gray-800/50 rounded px-2 py-1">
-            Selected: {selectedSquare} • Tap destination to move
-          </div>
-        </div>
-      )}
+
 
       {/* Board Size Indicator (for debugging, can be removed) */}
       {import.meta.env.DEV && (

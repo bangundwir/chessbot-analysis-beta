@@ -7,11 +7,16 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "build:bun": "bun run build",
+    "build:analyze": "bun run build && bunx vite-bundle-analyzer dist/stats.html",
+    "build:production": "NODE_ENV=production bun run build",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "preview": "vite preview",
     "preview:bun": "bun run preview",
     "start": "bun run dev",
-    "test:build": "bun run build && bun run preview"
+    "test:build": "bun run build && bun run preview",
+    "clean": "rm -rf dist node_modules/.vite",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "chess.js": "^1.4.0",

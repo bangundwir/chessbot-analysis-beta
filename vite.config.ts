@@ -9,14 +9,34 @@ export default defineConfig({
     sourcemap: false,
     minify: 'esbuild',
     target: 'es2015',
+    cssCodeSplit: true,
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
           chess: ['chess.js', 'react-chessboard']
+        },
+        chunkFileNames: (chunkInfo) => {
+          const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split('/').pop()?.replace('.tsx', '').replace('.ts', '') : 'chunk';
+          return `js/${facadeModuleId || 'chunk'}-[hash].js`;
+        },
+        assetFileNames: (assetInfo) => {
+          const name = assetInfo.name || 'asset';
+          const info = name.split('.');
+          const ext = info[info.length - 1];
+          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
+            return `img/[name]-[hash][extname]`;
+          }
+          if (/css/i.test(ext)) {
+            return `css/[name]-[hash][extname]`;
+          }
+          return `assets/[name]-[hash][extname]`;
         }
       }
-    }
+    },
+    // Optimize performance
+    reportCompressedSize: false,
+    chunkSizeWarningLimit: 1600
   },
   server: {
     port: 5173,
@@ -26,5 +46,9 @@ export default defineConfig({
   preview: {
     port: 4173,
     host: true
+  },
+  // Performance optimizations
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'chess.js', 'react-chessboard']
   }
 })

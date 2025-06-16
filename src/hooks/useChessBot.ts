@@ -1,6 +1,9 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Chess, Square } from 'chess.js';
 import { StockfishAPI } from '../services/stockfishApi';
+import { soundManager } from '../services/soundManager';
+import { hapticManager } from '../services/hapticManager';
+import { gameStorage } from '../services/gameStorage';
 import type { 
   GameState, 
   StockfishResponse,
@@ -20,13 +23,16 @@ export const useChessBot = () => {
     lastMove: null,
   });
   
-  const [settings, setSettings] = useState<GameSettings>({
-    mode: 'human-vs-ai',
-    boardOrientation: 'white',
-    aiDepth: 10,
-    showAnalysisArrows: true,
-    autoAnalysis: false,
-    analysisMode: false,
+  const [settings, setSettings] = useState<GameSettings>(() => {
+    const savedSettings = gameStorage.getSettings();
+    return {
+      mode: 'human-vs-ai',
+      boardOrientation: savedSettings.boardOrientation,
+      aiDepth: savedSettings.aiDepth,
+      showAnalysisArrows: savedSettings.showAnalysisArrows,
+      autoAnalysis: savedSettings.autoAnalysis,
+      analysisMode: false,
+    };
   });
 
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
@@ -36,6 +42,13 @@ export const useChessBot = () => {
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const [analysisArrows, setAnalysisArrows] = useState<AnalysisArrow[]>([]);
   const [hintMove, setHintMove] = useState<string | null>(null);
+
+  // Initialize services with saved settings
+  useEffect(() => {
+    const savedSettings = gameStorage.getSettings();
+    soundManager.setEnabled(savedSettings.soundEnabled);
+    hapticManager.setEnabled(savedSettings.hapticEnabled);
+  }, []);
 
   const updateGameState = useCallback(() => {
     setGameState({
@@ -152,6 +165,34 @@ export const useChessBot = () => {
         updateGameState();
         setHintMove(null); // Clear hint after move
         
+        // Enhanced feedback for moves
+        if (move.captured) {
+          soundManager.playCapture();
+          hapticManager.strongTap();
+        } else {
+          soundManager.playMove();
+          hapticManager.successPattern();
+        }
+
+        // Check for special game states
+        if (chess.inCheck()) {
+          soundManager.playCheck();
+          hapticManager.checkPattern();
+        }
+
+        if (chess.isGameOver()) {
+          soundManager.playGameEnd();
+          hapticManager.gameEndPattern();
+        }
+
+        // Auto-save the game
+        gameStorage.autoSaveCurrentGame(
+          chess.fen(),
+          chess.pgn(),
+          newMoveHistory.length,
+          move.san
+        );
+        
         // Auto-analyze if enabled
         if (settings.autoAnalysis || settings.analysisMode) {
           setTimeout(() => handleAnalyzePosition(), 100);
@@ -162,6 +203,8 @@ export const useChessBot = () => {
       }
     } catch (error) {
       console.error('Invalid move:', error);
+      soundManager.playError();
+      hapticManager.errorPattern();
     }
     
     return false;

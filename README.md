@@ -1,19 +1,53 @@
-# Chess Bot with Stockfish AI - Mobile Responsive
+# Chess Bot with Stockfish AI - Enhanced Edition
 
-Chess bot yang dibangun menggunakan **chess.js** dan **Stockfish REST API** dengan **Bun.js** sebagai runtime. Aplikasi ini memungkinkan Anda bermain catur melawan AI Stockfish yang kuat, menganalisis posisi, dan mempelajari berbagai strategi catur. **Sekarang dengan desain responsif untuk mobile yang sempurna!**
+Chess bot yang dibangun menggunakan **chess.js** dan **Stockfish REST API** dengan **Bun.js** sebagai runtime. Aplikasi ini memungkinkan Anda bermain catur melawan AI Stockfish yang kuat, menganalisis posisi, dan mempelajari berbagai strategi catur. **Sekarang dengan fitur-fitur canggih dan pengalaman pengguna yang ditingkatkan!**
 
 ## 🚀 Fitur Utama
 
+### ♟️ Core Chess Features
 - **Play vs AI**: Bermain melawan Stockfish engine dengan berbagai tingkat kesulitan
 - **Position Analysis**: Analisis posisi catur dengan evaluasi dan best move
 - **Interactive Chess Board**: Papan catur interaktif dengan drag & drop
-- **Mobile Responsive**: Desain yang optimal untuk semua ukuran layar
-- **Touch-Friendly**: Interface yang dirancang untuk perangkat sentuh
-- **Dynamic Board Sizing**: Board size otomatis menyesuaikan layar
 - **Move History**: Riwayat langkah dengan notasi algebris
 - **Adjustable Depth**: Atur kedalaman analisis bot (1-15)
 - **FEN Position Loading**: Load posisi dari string FEN
 - **Real-time Evaluation**: Evaluasi posisi secara real-time
+
+### 📱 Enhanced Mobile Experience
+- **Mobile Responsive**: Desain yang optimal untuk semua ukuran layar
+- **Touch-Friendly**: Interface yang dirancang untuk perangkat sentuh
+- **Dynamic Board Sizing**: Board size otomatis menyesuaikan layar (landscape/portrait)
+- **Haptic Feedback**: Getaran pada perangkat mobile untuk feedback yang lebih baik
+- **Touch Gestures**: Tap to select dan tap to move yang intuitif
+- **Smart Touch Handling**: Prevention of double-tap zoom dan enhanced touch interactions
+- **Mobile Instructions**: Dynamic guidance untuk mobile users
+- **PWA-Ready**: Optimizations untuk Progressive Web App experience
+
+### 🔊 Audio & Feedback
+- **Sound Effects**: Efek suara untuk gerakan, capture, check, dan game end
+- **Haptic Feedback**: Getaran yang berbeda untuk berbagai jenis aksi
+- **Visual Feedback**: Animasi dan transisi yang smooth
+- **Error Handling**: Feedback audio dan haptic untuk invalid moves
+
+### 💾 Game Management
+- **Auto-Save**: Otomatis menyimpan permainan saat ini
+- **Manual Save**: Simpan permainan dengan nama kustom
+- **Load Games**: Muat permainan yang tersimpan kapan saja
+- **Export/Import**: Export dan import data permainan
+- **Storage Management**: Manajemen penyimpanan lokal yang efisien
+
+### 📋 Real-time Data Display
+- **Live FEN Display**: FEN string yang update real-time dengan copy functionality
+- **Move Notation**: Algebraic notation untuk move terakhir dengan copy button
+- **Position Breakdown**: Educational FEN format explanation
+- **Mobile-Optimized**: Responsive display untuk semua ukuran layar
+
+### ⚙️ Advanced Settings
+- **Sound Control**: Toggle dan kontrol volume untuk efek suara
+- **Haptic Control**: Enable/disable haptic feedback
+- **Theme Options**: Pilihan tema (saat ini dark mode)
+- **Board Preferences**: Orientasi papan dan pengaturan visual
+- **Analysis Options**: Kontrol untuk analysis arrows dan auto-analysis
 
 ## 📱 Mobile Features
 
@@ -174,11 +208,38 @@ Files hasil build akan ada di folder `dist/`. Upload ke hosting static seperti:
   - 6-10: Menengah  
   - 11-15: Expert (mungkin lambat di mobile)
 
-### Mobile Settings
+### Enhanced Settings
+- **Sound Effects**: Enable/disable dengan test button tersedia
+- **Haptic Feedback**: Control getaran pada mobile devices
 - **Auto Analysis**: Direkomendasikan OFF untuk mobile (hemat baterai)
 - **Analysis Arrows**: ON untuk visual learning
 - **Board Notation**: Auto hide pada layar kecil
-- **Touch Mode**: Otomatis terdeteksi
+- **AI Depth**: Slider untuk mengatur kekuatan engine (1-15)
+
+## 🎮 Enhanced User Experience
+
+### Audio Feedback
+- **Move Sound**: Suara pleasant untuk gerakan normal
+- **Capture Sound**: Suara lebih dramatis untuk capture pieces
+- **Check Alert**: Suara peringatan untuk situasi check
+- **Game End**: Fanfare untuk akhir permainan
+- **Error Sound**: Beep untuk invalid moves
+
+### Haptic Feedback (Mobile)
+- **Light Tap**: UI interactions
+- **Medium Tap**: Piece selection
+- **Strong Tap**: Captures
+- **Success Pattern**: Valid moves
+- **Error Pattern**: Invalid attempts
+- **Check Pattern**: Check warnings
+- **Game End Pattern**: Checkmate/draw
+
+### Game Management
+- **Auto-Save**: Setiap move otomatis disimpan
+- **Manual Save**: Tombol save untuk menyimpan dengan nama
+- **Load Menu**: Akses via settings untuk load saved games
+- **Export Data**: JSON export untuk backup
+- **Storage Info**: Monitor penggunaan storage
 
 ## 🔍 Troubleshooting
 
@@ -194,10 +255,26 @@ Files hasil build akan ada di folder `dist/`. Upload ke hosting static seperti:
 
 ## 📚 Technical Details
 
+### New Architecture (v2.2)
+- **Error Boundaries**: Graceful error handling throughout the app
+- **Service Architecture**: Modular services for sound, haptic, and storage
+- **Enhanced Feedback**: Audio and haptic feedback systems
+- **Game Management**: Advanced save/load with auto-save functionality
+- **Settings System**: Persistent settings with real-time preview
+
+### New Services
+- **SoundManager**: Web Audio API untuk efek suara yang immersive
+- **HapticManager**: Vibration API untuk mobile feedback yang contextual
+- **GameStorage**: LocalStorage management dengan auto-save dan export/import
+- **ErrorBoundary**: Component untuk graceful error recovery
+
 ### Build Optimization
 ```javascript
 // vite.config.ts optimizations
 - Code splitting (vendor, chess chunks)
+- Asset organization by type
+- Performance optimizations
+- Error boundaries for stability
 - ES2015 target untuk browser support
 - Minification dengan esbuild
 - Host configuration untuk mobile testing
@@ -282,12 +359,31 @@ Laporkan bug melalui GitHub Issues dengan detail:
 
 ### Recent Updates ✨
 
-#### v2.1 - Mini Board Sync & Enhanced Mobile
+#### v2.3 - Real-time FEN & Enhanced Mobile
+- ✅ **Real-time FEN Display** - Live FEN dengan copy functionality
+- ✅ **Move Notation Display** - Live algebraic notation dengan copy button
+- ✅ **Enhanced Mobile Board** - Improved touch handling dengan haptic feedback
+- ✅ **Smart Board Sizing** - Landscape/portrait optimized sizing
+- ✅ **Mobile Touch Optimization** - Better touch interactions dan prevention of double-tap
+- ✅ **Enhanced Mobile Instructions** - Dynamic mobile guidance
+- ✅ **Improved CSS Mobile** - Touch-friendly styles dan PWA-ready optimizations
+
+#### v2.2 - Enhanced Experience & Advanced Features
+- ✅ **Audio Feedback System** - Sound effects untuk moves, captures, check, errors
+- ✅ **Haptic Feedback** - Contextual vibration untuk mobile devices
+- ✅ **Advanced Game Management** - Auto-save, manual save, load system
+- ✅ **Enhanced Settings** - Sound/haptic controls, persistent settings
+- ✅ **Error Boundaries** - Graceful error handling dan recovery
+- ✅ **Service Architecture** - Modular services untuk better maintainability
+- ✅ **Export/Import System** - Backup dan restore game data
+- ✅ **Storage Management** - Smart storage dengan auto-cleanup
+- ✅ **Performance Optimized** - Enhanced build dengan asset organization
+- ✅ **Mobile Experience** - Improved touch feedback dan responsiveness
+
+#### v2.1 - Mini Board Sync & Enhanced Mobile  
 - ✅ **Mini Board Orientation Sync** - Mini boards ikut flip dengan board utama
 - ✅ **Dynamic Board Sizing** - Otomatis 320px-600px sesuai layar
 - ✅ **Advanced Touch Controls** - 44px minimum, feedback animations
-- ✅ **Performance Optimized** - Bundle splitting, CSS containment
 - ✅ **Smart UI Adaptation** - Typography, spacing, notifications responsive
 - ✅ **Cross-Device Compatibility** - Konsisten di semua device
 - ✅ **Bun.js Full Integration** - Build, dev, preview dengan Bun
-- ✅ **Production Ready** - Optimized bundle (gzip: 109.16kB total)
