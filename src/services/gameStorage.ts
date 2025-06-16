@@ -15,6 +15,8 @@ interface GameSettings {
   hapticEnabled: boolean;
   theme: 'light' | 'dark';
   boardOrientation: 'white' | 'black';
+  humanColor: 'white' | 'black';
+  aiColor: 'white' | 'black';
   showAnalysisArrows: boolean;
   autoAnalysis: boolean;
   aiDepth: number;
@@ -110,6 +112,8 @@ class GameStorage {
         hapticEnabled: true,
         theme: 'dark',
         boardOrientation: 'white',
+        humanColor: 'white',
+        aiColor: 'black',
         showAnalysisArrows: true,
         autoAnalysis: false,
         aiDepth: 10
@@ -123,6 +127,8 @@ class GameStorage {
         hapticEnabled: true,
         theme: 'dark',
         boardOrientation: 'white',
+        humanColor: 'white',
+        aiColor: 'black',
         showAnalysisArrows: true,
         autoAnalysis: false,
         aiDepth: 10

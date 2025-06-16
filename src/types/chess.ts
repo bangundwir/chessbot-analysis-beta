@@ -2,10 +2,13 @@ import { Chess, Square } from 'chess.js';
 
 export type GameMode = 'human-vs-ai' | 'ai-vs-ai' | 'human-vs-human';
 export type BoardOrientation = 'white' | 'black';
+export type PlayerColor = 'white' | 'black';
 
 export interface GameSettings {
   mode: GameMode;
   boardOrientation: BoardOrientation;
+  humanColor: PlayerColor; // Human player color
+  aiColor: PlayerColor; // AI color
   aiDepth: number;
   showAnalysisArrows: boolean;
   autoAnalysis: boolean;

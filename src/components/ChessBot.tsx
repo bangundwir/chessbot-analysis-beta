@@ -53,7 +53,7 @@ export function ChessBot() {
   // Determine if pieces should be draggable
   const arePiecesDraggable = settings.analysisMode || 
     (settings.mode === 'human-vs-human') ||
-    (settings.mode === 'human-vs-ai' && chess.turn() === settings.boardOrientation[0]);
+    (settings.mode === 'human-vs-ai' && chess.turn() === settings.humanColor[0]);
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
@@ -124,10 +124,20 @@ export function ChessBot() {
                   )}
                 </h2>
                 <div className="flex items-center gap-2 text-xs md:text-sm" style={{ color: 'var(--text-light)' }}>
-                  <span>Orientation:</span>
-                  <span className="font-medium text-white capitalize">
-                    {settings.boardOrientation}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span>Human:</span>
+                    <span className={`font-medium px-2 py-1 rounded text-xs ${settings.humanColor === 'white' ? 'bg-gray-100 text-black' : 'bg-gray-800 text-white'}`}>
+                      {settings.humanColor === 'white' ? '♔' : '♚'} {settings.humanColor}
+                    </span>
+                  </div>
+                  {settings.mode === 'human-vs-ai' && (
+                    <div className="flex items-center gap-2">
+                      <span>AI:</span>
+                      <span className={`font-medium px-2 py-1 rounded text-xs ${settings.aiColor === 'white' ? 'bg-gray-100 text-black' : 'bg-gray-800 text-white'}`}>
+                        {settings.aiColor === 'white' ? '♔' : '♚'} {settings.aiColor}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
               
@@ -140,6 +150,9 @@ export function ChessBot() {
                 isFlipped={settings.boardOrientation === 'black'}
                 analysisArrows={settings.showAnalysisArrows ? analysisArrows : []}
                 arePiecesDraggable={arePiecesDraggable}
+                humanColor={settings.humanColor}
+                aiColor={settings.aiColor}
+                gameMode={settings.mode}
               />
 
               {/* Quick Actions */}

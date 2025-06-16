@@ -28,6 +28,8 @@ export const useChessBot = () => {
     return {
       mode: 'human-vs-ai',
       boardOrientation: savedSettings.boardOrientation,
+      humanColor: 'white', // Default: human plays white
+      aiColor: 'black', // Default: AI plays black
       aiDepth: savedSettings.aiDepth,
       showAnalysisArrows: savedSettings.showAnalysisArrows,
       autoAnalysis: savedSettings.autoAnalysis,
@@ -86,7 +88,7 @@ export const useChessBot = () => {
     
     switch (settings.mode) {
       case 'human-vs-ai':
-        return chess.turn() === settings.boardOrientation[0];
+        return chess.turn() === settings.humanColor[0]; // Use humanColor instead of boardOrientation
       case 'human-vs-human':
         return true;
       case 'ai-vs-ai':
@@ -94,7 +96,7 @@ export const useChessBot = () => {
       default:
         return true;
     }
-  }, [settings.mode, settings.boardOrientation, settings.analysisMode, chess]);
+  }, [settings.mode, settings.humanColor, settings.analysisMode, chess]);
 
   const parseMove = useCallback((moveString: string) => {
     // Parse move string like "e2e4" or "bestmove e2e4"
@@ -369,7 +371,12 @@ export const useChessBot = () => {
     setAnalysisArrows([]);
     setHintMove(null);
     clearSelection();
-    setSettings(prev => ({ ...prev, boardOrientation: 'white' }));
+    setSettings(prev => ({ 
+      ...prev, 
+      humanColor: 'white',
+      aiColor: 'black',
+      boardOrientation: 'white' // Set board orientation to match human color
+    }));
     updateGameState();
   }, [chess, clearSelection, updateGameState]);
 
@@ -380,10 +387,15 @@ export const useChessBot = () => {
     setAnalysisArrows([]);
     setHintMove(null);
     clearSelection();
-    setSettings(prev => ({ ...prev, boardOrientation: 'black' }));
+    setSettings(prev => ({ 
+      ...prev, 
+      humanColor: 'black',
+      aiColor: 'white',
+      boardOrientation: 'black' // Set board orientation to match human color
+    }));
     updateGameState();
     
-    // If playing as black in human vs AI, let AI make first move
+    // If playing as black in human vs AI, let AI (white) make first move
     if (settings.mode === 'human-vs-ai') {
       setTimeout(() => handleBotMove(), 500);
     }
@@ -419,6 +431,7 @@ export const useChessBot = () => {
     setSettings(prev => ({
       ...prev,
       boardOrientation: prev.boardOrientation === 'white' ? 'black' : 'white'
+      // Note: humanColor and aiColor remain unchanged when flipping board
     }));
   }, []);
 

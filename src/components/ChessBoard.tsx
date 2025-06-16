@@ -12,6 +12,9 @@ interface ChessBoardProps {
   isFlipped: boolean;
   analysisArrows: AnalysisArrowType[];
   arePiecesDraggable: boolean;
+  humanColor?: 'white' | 'black';
+  aiColor?: 'white' | 'black';
+  gameMode?: string;
 }
 
 export function ChessBoard({ 
@@ -22,7 +25,10 @@ export function ChessBoard({
   availableMoves, 
   isFlipped, 
   analysisArrows,
-  arePiecesDraggable
+  arePiecesDraggable,
+  humanColor = 'white',
+  aiColor: _aiColor = 'black',
+  gameMode = 'human-vs-ai'
 }: ChessBoardProps) {
   
   const [boardSize, setBoardSize] = useState(400);
@@ -275,8 +281,9 @@ export function ChessBoard({
         />
       </div>
 
-      {/* Player indicators */}
+      {/* Enhanced Player indicators with Human/AI labels */}
       <div className="flex justify-between items-center mt-3 md:mt-4 px-2 w-full" style={{ maxWidth: `${boardSize}px` }}>
+        {/* Bottom player (from board perspective) */}
         <div className="flex items-center space-x-2">
           <div 
             className={`w-2 h-2 md:w-3 md:h-3 rounded-full ${chess.turn() === (isFlipped ? 'b' : 'w') ? 'animate-pulse' : ''}`}
@@ -285,6 +292,13 @@ export function ChessBoard({
             }}
           />
           <span className="text-xs md:text-sm font-medium" style={{ color: 'var(--text-light)' }}>
+            <span className="text-gray-400">
+              {gameMode === 'human-vs-ai' && (
+                <>
+                  {(isFlipped ? 'b' : 'w') === humanColor[0] ? '👤' : '🤖'}{' '}
+                </>
+              )}
+            </span>
             {isFlipped ? 'Black' : 'White'}
             {chess.turn() === (isFlipped ? 'b' : 'w') && (
               <span className="ml-1 text-green-400">•</span>
@@ -296,14 +310,27 @@ export function ChessBoard({
           <div className="text-xs md:text-sm text-gray-400">
             Turn: {chess.moveNumber()}
           </div>
+          {gameMode === 'human-vs-ai' && (
+            <div className="text-xs text-gray-500">
+              👤 = Human, 🤖 = AI
+            </div>
+          )}
         </div>
         
+        {/* Top player (from board perspective) */}
         <div className="flex items-center space-x-2">
           <span className="text-xs md:text-sm font-medium" style={{ color: 'var(--text-light)' }}>
             {chess.turn() === (isFlipped ? 'w' : 'b') && (
               <span className="mr-1 text-green-400">•</span>
             )}
             {isFlipped ? 'White' : 'Black'}
+            <span className="text-gray-400">
+              {gameMode === 'human-vs-ai' && (
+                <>
+                  {' '}{(isFlipped ? 'w' : 'b') === humanColor[0] ? '👤' : '🤖'}
+                </>
+              )}
+            </span>
           </span>
           <div 
             className={`w-2 h-2 md:w-3 md:h-3 rounded-full ${chess.turn() === (isFlipped ? 'w' : 'b') ? 'animate-pulse' : ''}`}
