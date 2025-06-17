@@ -4,6 +4,7 @@ import { StockfishAPI } from '../services/stockfishApi';
 import { soundManager } from '../services/soundManager';
 import { hapticManager } from '../services/hapticManager';
 import { gameStorage } from '../services/gameStorage';
+import type { PGNGameInfo } from '../services/pgnParser';
 import type { 
   GameState, 
   StockfishResponse,
@@ -457,6 +458,53 @@ export const useChessBot = () => {
     }
   }, [chess]);
 
+  const handleLoadPGN = useCallback((newChess: Chess, gameInfo: PGNGameInfo) => {
+    try {
+      // Load the position from the provided chess instance
+      chess.load(newChess.fen());
+      
+      // Create move history from the game moves
+      const moveHistory = gameInfo.moves.map((move, index) => {
+        // Try to apply the move to get the SAN notation
+        const tempChess = new Chess();
+        for (let i = 0; i <= index; i++) {
+          try {
+            const moveResult = tempChess.move(gameInfo.moves[i]);
+            if (i === index && moveResult) {
+              return moveResult.san;
+            }
+          } catch (e) {
+            // If move fails, just use the original notation
+            return gameInfo.moves[i];
+          }
+        }
+        return move;
+      });
+      
+      setMoveHistory(moveHistory);
+      setAnalysis(null);
+      setAnalysisArrows([]);
+      setHintMove(null);
+      clearSelection();
+      updateGameState();
+      
+      // Auto-analyze the loaded position if analysis mode is on
+      if (settings.autoAnalysis || settings.analysisMode) {
+        setTimeout(() => handleAnalyzePosition(), 100);
+      }
+      
+      // Play a success sound
+      soundManager.playMove();
+      hapticManager.successPattern();
+      
+      console.log('PGN loaded successfully:', gameInfo.headers.Event || 'Unknown Game');
+    } catch (error) {
+      console.error('Failed to load PGN game:', error);
+      soundManager.playError();
+      hapticManager.errorPattern();
+    }
+  }, [chess, clearSelection, updateGameState, settings.autoAnalysis, settings.analysisMode, handleAnalyzePosition]);
+
   // AI vs AI game loop
   useEffect(() => {
     let timeoutId: number;
@@ -523,5 +571,6 @@ export const useChessBot = () => {
     handleBotMove,
     handleLoadFen,
     handleCopyFen,
+    handleLoadPGN,
   };
 }; 

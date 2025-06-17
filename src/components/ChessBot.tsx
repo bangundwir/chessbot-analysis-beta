@@ -3,12 +3,14 @@ import { GameControls } from './GameControls';
 import { SettingsModal } from './SettingsModal';
 import { FenDisplay } from './FenDisplay';
 import { MoveNotation } from './MoveNotation';
+import { PgnLoadModal } from './PgnLoadModal';
 import { useChessBot } from '../hooks/useChessBot';
 import { useState, useEffect } from 'react';
 
 export function ChessBot() {
   const [isMobile, setIsMobile] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showPgnModal, setShowPgnModal] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -48,6 +50,7 @@ export function ChessBot() {
     handleBotMove,
     handleLoadFen,
     handleCopyFen,
+    handleLoadPGN,
   } = useChessBot();
 
   // Determine if pieces should be draggable
@@ -69,13 +72,22 @@ export function ChessBot() {
               </div>
               <span className="text-2xl md:text-4xl">♚</span>
             </div>
-            <button
-              onClick={() => setShowSettings(true)}
-              className="chess-button secondary p-2 ml-4"
-              title="Settings"
-            >
-              ⚙️
-            </button>
+            <div className="flex gap-2 ml-4">
+              <button
+                onClick={() => setShowPgnModal(true)}
+                className="chess-button secondary p-2"
+                title="Load PGN Game"
+              >
+                📝
+              </button>
+              <button
+                onClick={() => setShowSettings(true)}
+                className="chess-button secondary p-2"
+                title="Settings"
+              >
+                ⚙️
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -308,6 +320,13 @@ export function ChessBot() {
         onClose={() => setShowSettings(false)}
         currentSettings={settings}
         onSettingsChange={handleSettingsChange}
+      />
+
+      {/* PGN Load Modal */}
+      <PgnLoadModal
+        isOpen={showPgnModal}
+        onClose={() => setShowPgnModal(false)}
+        onLoadGame={handleLoadPGN}
       />
     </div>
   );
