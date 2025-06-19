@@ -82,13 +82,13 @@ export function ChessBot({
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
-      {/* Header */}
+            {/* Header */}
       <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border-b border-gray-700 shadow-lg">
-        <div className="container mx-auto px-3 py-4 md:px-4 md:py-6">
+        <div className="container mx-auto px-2 py-3 md:px-4 md:py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 md:gap-3">
-              <span className="text-2xl md:text-4xl">♔</span>
-              <div className="text-center md:text-left">
+            <div className="flex items-center gap-1 md:gap-3 flex-1 min-w-0">
+              <span className="text-xl md:text-4xl flex-shrink-0">♔</span>
+              <div className="text-center md:text-left flex-1 min-w-0">
                 {tabId && onRename ? (
                   isRenaming ? (
                     <input
@@ -111,42 +111,45 @@ export function ChessBot({
                           setIsRenaming(false);
                         }
                       }}
-                      className="bg-gray-700 text-white px-2 py-1 rounded text-xl md:text-3xl font-bold"
+                      className="bg-gray-700 text-white px-2 py-1 rounded text-base md:text-3xl font-bold w-full max-w-full"
                       autoFocus
                     />
                   ) : (
-                                         <h1 
-                       className="text-xl md:text-3xl font-bold text-white cursor-pointer hover:text-blue-300 transition-colors"
-                       onClick={() => {
-                         setTempName(tabName || 'Chess Bot Analysis');
-                         setIsRenaming(true);
-                       }}
-                       title="Click to rename tab"
-                     >
-                       {tabName || 'Chess Bot Analysis'}
-                     </h1>
+                    <h1 
+                      className="text-base md:text-3xl font-bold text-white cursor-pointer hover:text-blue-300 transition-colors truncate"
+                      onClick={() => {
+                        setTempName(tabName || 'Chess Bot Analysis');
+                        setIsRenaming(true);
+                      }}
+                      title="Click to rename tab"
+                    >
+                      {tabName || 'Chess Bot Analysis'}
+                    </h1>
                   )
                 ) : (
-                  <h1 className="text-xl md:text-3xl font-bold text-white">Chess Bot Analysis</h1>
+                  <h1 className="text-base md:text-3xl font-bold text-white truncate">Chess Bot Analysis</h1>
                 )}
-                <p className="text-gray-300 text-xs md:text-sm">Advanced Chess Analysis with AI • Drag & Drop Enabled</p>
+                <p className="text-gray-300 text-xs md:text-sm hidden sm:block">Advanced Chess Analysis with AI • Drag & Drop Enabled</p>
+                <p className="text-gray-300 text-xs sm:hidden">Chess AI • Touch Enabled</p>
               </div>
-              <span className="text-2xl md:text-4xl">♚</span>
+              <span className="text-xl md:text-4xl flex-shrink-0">♚</span>
             </div>
-            <div className="flex gap-2 ml-4">
+            <div className="flex gap-1 md:gap-2 ml-2 md:ml-4 flex-shrink-0">
               <button
                 onClick={() => setShowPgnModal(true)}
-                className="chess-button secondary p-2"
+                className="chess-button secondary p-2 md:p-2 text-xs md:text-sm touch-manipulation"
                 title="Load PGN Game"
               >
-                📝
+                <span className="hidden md:inline">📝</span>
+                <span className="md:hidden">PGN</span>
               </button>
               <button
                 onClick={() => setShowSettings(true)}
-                className="chess-button secondary p-2"
+                className="chess-button secondary p-2 md:p-2 text-xs md:text-sm touch-manipulation"
                 title="Settings"
               >
-                ⚙️
+                <span className="hidden md:inline">⚙️</span>
+                <span className="md:hidden">⚙️</span>
               </button>
             </div>
           </div>
@@ -155,15 +158,17 @@ export function ChessBot({
 
       {/* Mobile Quick Tips */}
       {isMobile && (
-        <div className="bg-blue-900/20 border-b border-blue-500/30 px-3 py-2">
+        <div className="bg-gradient-to-r from-blue-900/20 to-purple-900/20 border-b border-blue-500/30 px-2 py-2 md:px-3 md:py-2">
           <div className="text-center">
-            <p className="text-blue-300 text-xs">
-              💡 <strong>Mobile Tips:</strong> Tap piece → Tap destination or Drag & Drop pieces to move
+            <p className="text-blue-300 text-xs leading-relaxed">
+              💡 <strong>Touch Tips:</strong> Tap piece → Tap destination or drag pieces to move
             </p>
             {selectedSquare && (
-              <p className="text-yellow-300 text-xs mt-1">
-                ✨ Selected: <strong>{selectedSquare}</strong> → Tap any green highlighted square to move
-              </p>
+              <div className="mt-2 bg-yellow-500/20 rounded-lg px-3 py-1 inline-block">
+                <p className="text-yellow-300 text-xs font-medium">
+                  ✨ Selected: <strong className="text-yellow-100">{selectedSquare}</strong> → Tap green square to move
+                </p>
+              </div>
             )}
           </div>
         </div>
@@ -232,42 +237,75 @@ export function ChessBot({
               <div className="mt-4 flex flex-wrap gap-2 justify-center">
                 <button 
                   onClick={handleGetHint} 
-                  className="chess-button flex-1 sm:flex-none"
+                  className={`chess-button flex-1 sm:flex-none min-h-[44px] touch-manipulation ${isThinking ? 'pulse' : ''}`}
                   disabled={isThinking}
                 >
-                  <span className="hidden sm:inline">💡 Get Hint</span>
-                  <span className="sm:hidden">💡 Hint</span>
+                  <div className="flex items-center justify-center gap-1">
+                    {isThinking ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      <span>💡</span>
+                    )}
+                    <span className="hidden sm:inline">{isThinking ? 'Thinking...' : 'Get Hint'}</span>
+                    <span className="sm:hidden text-xs">{isThinking ? '...' : 'Hint'}</span>
+                  </div>
                 </button>
                 <button 
                   onClick={handleAnalyzePosition} 
-                  className="chess-button flex-1 sm:flex-none"
+                  className={`chess-button flex-1 sm:flex-none min-h-[44px] touch-manipulation ${isThinking ? 'pulse' : ''}`}
                   disabled={isThinking}
                 >
-                  <span className="hidden sm:inline">📊 Analyze</span>
-                  <span className="sm:hidden">📊 Analyze</span>
+                  <div className="flex items-center justify-center gap-1">
+                    {isThinking ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      <span>📊</span>
+                    )}
+                    <span className="hidden sm:inline">{isThinking ? 'Analyzing...' : 'Analyze'}</span>
+                    <span className="sm:hidden text-xs">{isThinking ? '...' : 'Analyze'}</span>
+                  </div>
                 </button>
-                <button onClick={handleFlipBoard} className="chess-button secondary flex-1 sm:flex-none">
-                  <span className="hidden sm:inline">🔄 Flip</span>
-                  <span className="sm:hidden">🔄</span>
+                <button 
+                  onClick={handleFlipBoard} 
+                  className="chess-button secondary flex-1 sm:flex-none min-h-[44px] touch-manipulation"
+                >
+                  <div className="flex items-center justify-center gap-1">
+                    <span>🔄</span>
+                    <span className="hidden sm:inline">Flip</span>
+                    <span className="sm:hidden text-xs">Flip</span>
+                  </div>
                 </button>
-                <button onClick={handleUndo} className="chess-button secondary flex-1 sm:flex-none">
-                  <span className="hidden sm:inline">↩️ Undo</span>
-                  <span className="sm:hidden">↩️</span>
+                <button 
+                  onClick={handleUndo} 
+                  className="chess-button secondary flex-1 sm:flex-none min-h-[44px] touch-manipulation"
+                >
+                  <div className="flex items-center justify-center gap-1">
+                    <span>↩️</span>
+                    <span className="hidden sm:inline">Undo</span>
+                    <span className="sm:hidden text-xs">Undo</span>
+                  </div>
                 </button>
               </div>
 
               {/* Mobile Status */}
               {isMobile && (
                 <div className="mt-3 text-center">
-                  <div className="text-xs text-gray-400">
+                  <div className="bg-gray-800 rounded-lg px-3 py-2 text-xs">
                     {selectedSquare ? (
-                      <span className="text-yellow-300">
-                        📍 Selected: {selectedSquare} • Available moves: {availableMoves.length}
-                      </span>
+                      <div className="text-yellow-300 font-medium">
+                        <div className="flex items-center justify-center gap-1">
+                          <span>📍</span>
+                          <span>Selected: <strong>{selectedSquare}</strong></span>
+                        </div>
+                        <div className="text-gray-400 mt-1">
+                          Available moves: {availableMoves.length}
+                        </div>
+                      </div>
                     ) : (
-                      <span>
-                        🎯 Tap any piece to see available moves
-                      </span>
+                      <div className="text-gray-400 flex items-center justify-center gap-1">
+                        <span>🎯</span>
+                        <span>Tap any piece to see moves</span>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -357,19 +395,27 @@ export function ChessBot({
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 border-t border-gray-700 mt-8 md:mt-12">
-        <div className="container mx-auto px-3 py-4 md:px-4 md:py-6">
+      <footer className="bg-gray-900 border-t border-gray-700 mt-4 md:mt-12">
+        <div className="container mx-auto px-2 py-3 md:px-4 md:py-6">
           <div className="text-center">
-            <p className="text-gray-400 text-xs md:text-sm">
-              Chess Bot Analysis • Powered by Stockfish • Built with React & TypeScript
+            <p className="text-gray-400 text-xs md:text-sm leading-relaxed">
+              Chess Bot Analysis • Powered by Stockfish
+              <span className="hidden md:inline"> • Built with React & TypeScript</span>
             </p>
-            <div className="flex justify-center items-center gap-2 md:gap-4 mt-2 flex-wrap">
-              <span className="text-xs text-gray-500">Features:</span>
-              <span className="text-xs text-gray-400">AI Analysis</span>
-              <span className="text-xs text-gray-400">•</span>
-              <span className="text-xs text-gray-400">Drag & Drop</span>
-              <span className="text-xs text-gray-400">•</span>
-              <span className="text-xs text-gray-400">Mobile Responsive</span>
+            <div className="flex justify-center items-center gap-1 md:gap-4 mt-2 flex-wrap text-xs">
+              <span className="text-gray-500 hidden md:inline">Features:</span>
+              <div className="flex items-center gap-1 bg-gray-800 rounded-full px-2 py-1">
+                <span className="text-green-400">🤖</span>
+                <span className="text-gray-400">AI Analysis</span>
+              </div>
+              <div className="flex items-center gap-1 bg-gray-800 rounded-full px-2 py-1">
+                <span className="text-blue-400">👆</span>
+                <span className="text-gray-400">Touch Enabled</span>
+              </div>
+              <div className="flex items-center gap-1 bg-gray-800 rounded-full px-2 py-1">
+                <span className="text-purple-400">📱</span>
+                <span className="text-gray-400">Mobile Ready</span>
+              </div>
             </div>
           </div>
         </div>
