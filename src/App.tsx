@@ -1,11 +1,11 @@
-import { ChessBot } from './components/ChessBot';
+import { TabSystem } from './components/TabSystem';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 function App() {
   return (
     <ErrorBoundary>
       <div className="App">
-        <ChessBot />
+        <TabSystem />
       </div>
     </ErrorBoundary>
   );

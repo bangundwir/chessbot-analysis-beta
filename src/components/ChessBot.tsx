@@ -7,10 +7,32 @@ import { PgnLoadModal } from './PgnLoadModal';
 import { useChessBot } from '../hooks/useChessBot';
 import { useState, useEffect } from 'react';
 
-export function ChessBot() {
+interface ChessBotProps {
+  tabId?: string;
+  tabName?: string;
+  initialGameState?: {
+    fen: string;
+    pgn: string;
+    moveHistory: string[];
+    settings: any;
+    lastMove: string | null;
+  };
+  onGameStateChange?: (gameState: any) => void;
+  onRename?: (newName: string) => void;
+}
+
+export function ChessBot({ 
+  tabId, 
+  tabName,
+  initialGameState, 
+  onGameStateChange, 
+  onRename 
+}: ChessBotProps = {}) {
   const [isMobile, setIsMobile] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showPgnModal, setShowPgnModal] = useState(false);
+  const [isRenaming, setIsRenaming] = useState(false);
+  const [tempName, setTempName] = useState('');
 
   useEffect(() => {
     const checkMobile = () => {
@@ -51,7 +73,7 @@ export function ChessBot() {
     handleLoadFen,
     handleCopyFen,
     handleLoadPGN,
-  } = useChessBot();
+  } = useChessBot(initialGameState, onGameStateChange);
 
   // Determine if pieces should be draggable
   const arePiecesDraggable = settings.analysisMode || 
@@ -67,7 +89,46 @@ export function ChessBot() {
             <div className="flex items-center gap-2 md:gap-3">
               <span className="text-2xl md:text-4xl">♔</span>
               <div className="text-center md:text-left">
-                <h1 className="text-xl md:text-3xl font-bold text-white">Chess Bot Analysis</h1>
+                {tabId && onRename ? (
+                  isRenaming ? (
+                    <input
+                      type="text"
+                      value={tempName}
+                      onChange={(e) => setTempName(e.target.value)}
+                      onBlur={() => {
+                        if (tempName.trim()) {
+                          onRename(tempName.trim());
+                        }
+                        setIsRenaming(false);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          if (tempName.trim()) {
+                            onRename(tempName.trim());
+                          }
+                          setIsRenaming(false);
+                        } else if (e.key === 'Escape') {
+                          setIsRenaming(false);
+                        }
+                      }}
+                      className="bg-gray-700 text-white px-2 py-1 rounded text-xl md:text-3xl font-bold"
+                      autoFocus
+                    />
+                  ) : (
+                                         <h1 
+                       className="text-xl md:text-3xl font-bold text-white cursor-pointer hover:text-blue-300 transition-colors"
+                       onClick={() => {
+                         setTempName(tabName || 'Chess Bot Analysis');
+                         setIsRenaming(true);
+                       }}
+                       title="Click to rename tab"
+                     >
+                       {tabName || 'Chess Bot Analysis'}
+                     </h1>
+                  )
+                ) : (
+                  <h1 className="text-xl md:text-3xl font-bold text-white">Chess Bot Analysis</h1>
+                )}
                 <p className="text-gray-300 text-xs md:text-sm">Advanced Chess Analysis with AI • Drag & Drop Enabled</p>
               </div>
               <span className="text-2xl md:text-4xl">♚</span>

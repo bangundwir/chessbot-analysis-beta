@@ -157,6 +157,41 @@ class GameStorage {
     }
   }
 
+  // Save complete tab state
+  saveTabState(tabId: string, gameState: any): void {
+    try {
+      const key = `chessbot-tab-${tabId}`;
+      localStorage.setItem(key, JSON.stringify({
+        ...gameState,
+        timestamp: Date.now()
+      }));
+    } catch (error) {
+      console.error('Error saving tab state:', error);
+    }
+  }
+
+  // Load tab state
+  loadTabState(tabId: string): any | null {
+    try {
+      const key = `chessbot-tab-${tabId}`;
+      const stateJson = localStorage.getItem(key);
+      return stateJson ? JSON.parse(stateJson) : null;
+    } catch (error) {
+      console.error('Error loading tab state:', error);
+      return null;
+    }
+  }
+
+  // Clear tab state
+  clearTabState(tabId: string): void {
+    try {
+      const key = `chessbot-tab-${tabId}`;
+      localStorage.removeItem(key);
+    } catch (error) {
+      console.error('Error clearing tab state:', error);
+    }
+  }
+
   getAutoSavedGame(): SavedGame | null {
     try {
       const autoSaveJson = localStorage.getItem('chessbot-auto-save');

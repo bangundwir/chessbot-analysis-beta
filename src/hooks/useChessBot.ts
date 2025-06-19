@@ -14,17 +14,40 @@ import type {
 
 const stockfishApi = new StockfishAPI();
 
-export const useChessBot = () => {
-  const [chess] = useState(() => new Chess());
+export const useChessBot = (
+  initialGameState?: {
+    fen: string;
+    pgn: string;
+    moveHistory: string[];
+    settings: any;
+    lastMove: string | null;
+  },
+  onGameStateChange?: (gameState: any) => void
+) => {
+  const [chess] = useState(() => {
+    const newChess = new Chess();
+    if (initialGameState?.fen) {
+      try {
+        newChess.load(initialGameState.fen);
+      } catch (error) {
+        console.error('Failed to load initial FEN:', error);
+      }
+    }
+    return newChess;
+  });
+  
   const [gameState, setGameState] = useState<GameState>({
     chess: chess,
     fen: chess.fen(),
     gameOver: chess.isGameOver(),
     winner: null,
-    lastMove: null,
+    lastMove: initialGameState?.lastMove || null,
   });
   
   const [settings, setSettings] = useState<GameSettings>(() => {
+    if (initialGameState?.settings) {
+      return initialGameState.settings;
+    }
     const savedSettings = gameStorage.getSettings();
     return {
       mode: 'human-vs-ai',
@@ -42,7 +65,7 @@ export const useChessBot = () => {
   const [availableMoves, setAvailableMoves] = useState<Square[]>([]);
   const [isThinking, setIsThinking] = useState(false);
   const [analysis, setAnalysis] = useState<StockfishResponse | null>(null);
-  const [moveHistory, setMoveHistory] = useState<string[]>([]);
+  const [moveHistory, setMoveHistory] = useState<string[]>(initialGameState?.moveHistory || []);
   const [analysisArrows, setAnalysisArrows] = useState<AnalysisArrow[]>([]);
   const [hintMove, setHintMove] = useState<string | null>(null);
 
@@ -52,6 +75,19 @@ export const useChessBot = () => {
     soundManager.setEnabled(savedSettings.soundEnabled);
     hapticManager.setEnabled(savedSettings.hapticEnabled);
   }, []);
+
+  // Emit state changes for tab persistence
+  useEffect(() => {
+    if (onGameStateChange) {
+      onGameStateChange({
+        fen: chess.fen(),
+        pgn: chess.pgn(),
+        moveHistory,
+        settings,
+        lastMove: moveHistory[moveHistory.length - 1] || null,
+      });
+    }
+  }, [chess.fen(), moveHistory, settings, onGameStateChange]);
 
   const updateGameState = useCallback(() => {
     setGameState({
